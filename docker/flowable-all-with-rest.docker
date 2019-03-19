@@ -1,0 +1,8 @@
+FROM flowable/all-in-one
+
+COPY assets/flowable-6.4.1/wars/flowable-rest.war /opt/tomcat/webapps/flowable-rest.war
+
+EXPOSE 8080
+WORKDIR /opt/tomcat
+USER tomcat
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]

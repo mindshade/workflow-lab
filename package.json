@@ -3,7 +3,20 @@
   "version": "1.0.0",
   "description": "Workflow Laboratory",
   "main": "src/index.js",
-  "author": "Fredrik W Engberg",
+  "author": {
+    "email": "fredrik.w.engberg@gmail.com",
+    "name": "Fredrik W Engberg"
+  },
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.0",
+    "console.table": "^0.10.0",
+    "nodemon": "^1.18.10",
+    "vorpal": "^1.11.4"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  }
 }
