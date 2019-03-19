@@ -40,7 +40,7 @@ By default you are logged in as `rest-admin`.
 
 In the CLI, use `help` to learn about the available commands.
 
-# Setting up and running a workflow
+## Setting up and running a workflow
 
 Make sure you have docker container started according to the "Setup" instructions above.
 
@@ -48,9 +48,9 @@ Make sure you have docker container started according to the "Setup" instruction
 2. Still in the modeler create an `App` (i.e. deployment) to which your process definition is connected. Give app user access to `rest-admin`, for example. Save and publish the `App` 
 3. Start the CLI (`yarn run dev`).
 4. The command `deployments` should now list your deployment (app).
-5. The command `process-definitions` should bow list your process definition.
+5. The command `process-definitions` should show list your process definition which was included in the deployment (app).
 6. Start a new process instance using `process-instance-create -i <processDefinitionId> <name>`.
 7. View process instances using `process-instances`.
-7. If your process stops at a manual task this is listed by `tasks`.
+7. If your process stops at a manual task, that task is then listed when command `tasks` is issued.
 8. Assign the task to a user with `task-assign <id> <user>`
 8. Complete a task, to make the process instance move on, `task-complete <id>`.
