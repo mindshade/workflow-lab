@@ -1,0 +1,9 @@
+{
+  "name": "workflow-lab",
+  "version": "1.0.0",
+  "description": "Workflow Laboratory",
+  "main": "src/index.js",
+  "author": "Fredrik W Engberg",
+  "license": "MIT",
+  "private": true
+}
