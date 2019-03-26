@@ -47,13 +47,13 @@ Make sure you have docker container started according to the "Setup" instruction
 1. Open the [Modeler](http://localhost:8080/flowable-modeler) and create a process definition. Save and publish the definition.
 2. Still in the modeler create an `App` (i.e. deployment) to which your process definition is connected. Give app user access to `rest-admin`, for example. Save and publish the `App` 
 3. Start the CLI (`yarn run dev`).
-4. The command `deployments` should now list your deployment (app).
-5. The command `process-definitions` should show list your process definition which was included in the deployment (app).
-6. Start a new process instance using `process-instance-create -i <processDefinitionId> <name>`.
-7. View process instances using `process-instances`.
-9. If your process stops at a manual task, that task is then listed when command `tasks` is issued.
-8. Assign the task to a user with `task-assign <id> <user>`
-9. Complete a task, to make the process instance move on, `task-complete <id>`.
+4. The command `deployment list` should now list your deployment (app).
+5. The command `process-def list` should show list your process definition which was included in the deployment (app).
+6. Start a new process instance using `process-inst start -i <processDefinitionId> <name>`.
+7. View process instances using `process-inst list`.
+9. If your process stops at a manual task, that task is then listed when command `task list` is issued.
+8. Assign the task to a user with `task assign <id> <user>`
+9. Complete a task, to make the process instance move on, `task complete <id>`.
 
 # Basic workflow recipe commands
 
