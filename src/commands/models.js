@@ -3,7 +3,7 @@ const rest = fr.client;
 
 module.exports = function(cli) {
 
-    cli.vorpal.command('models')
+    cli.vorpal.command('model list')
         .description('List models')
         .action(async function (args, cb) {
             try {
@@ -15,5 +15,4 @@ module.exports = function(cli) {
             }
             cb();
         });
-
 };

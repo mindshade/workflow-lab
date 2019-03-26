@@ -46,9 +46,33 @@ function toPaginationMsg(data) {
     return message;
 }
 
+function parseIdValuePairs(idValuePairs, useName) {
+    const keyAttribute = useName ? 'name' : 'id';
+    let formValues = [];
+    if (idValuePairs != null) {
+        if (Array.isArray(idValuePairs)) {
+            idValuePairs.forEach(v => {
+                let idValue = v.split('=');
+                if (idValue.length === 2) {
+                    let variable = {};
+                    variable[keyAttribute] = idValue[0];
+                    variable['value'] = idValue[1];
+                    formValues.push(variable);
+                } else {
+                    throw new Error("Invalid id value pair, ignoring: "+v);
+                }
+            });
+        } else {
+            throw new Error("Invalid argument, must be array");
+        }
+    }
+    return formValues;
+}
+
 module.exports = {
     client,
     login,
     toMessage,
-    toPaginationMsg
+    toPaginationMsg,
+    parseIdValuePairs
 };

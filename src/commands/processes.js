@@ -4,12 +4,14 @@ const rest = fr.client;
 
 module.exports = function(cli) {
 
-    cli.vorpal.command('process-definitions')
-        .description('List process definitions')
+    cli.vorpal.command('process-def list')
+        .description('List process definitions.')
+        .option('-a, --allFields', 'List all fields.')
+        .option('-p, --previousVersions', 'Include all previous versions, not just the latest.')
         .action(async function (args, cb) {
             try {
-                let response = await rest().get('/repository/process-definitions');
-                cli.logTable(pick.from(response.data.data, 'id', 'key', 'name', 'version', 'category', 'description', '' +
+                let response = await rest().get('/repository/process-definitions', { params: { latest: !args.options.previousVersions }});
+                cli.logTable(pick.from(response.data.data, args.options.allFields, 'id', 'key', 'name', 'version', 'category', 'description',
                     'startFormDefined'));
                 cli.log(fr.toPaginationMsg(response.data));
             } catch (e) {
@@ -18,8 +20,46 @@ module.exports = function(cli) {
             cb();
         });
 
-    cli.vorpal.command('process-instances')
-        .description('List process instances')
+    cli.vorpal.command('process-def starters <processDefinitionId>')
+        .description('List starter candidates for a process definition.')
+        .option('-a, --allFields', 'List all users or groups that can start a process instance for the specified definition..')
+        .action(async function (args, cb) {
+            try {
+                let response = await rest().get(`/repository/process-definitions/${args.processDefinitionId}/identitylinks`);
+                cli.logTable(response.data);
+                cli.log(fr.toPaginationMsg(response.data));
+            } catch (e) {
+                cli.logErr(fr.toMessage(e));
+            }
+            cb();
+        });
+
+    cli.vorpal.command('process-def start-form <processDefinitionId>')
+        .description('Display the start from for specific process definition.')
+        .action(async function (args, cb) {
+            try {
+                let response = await rest().get(`/repository/process-definitions/${args.processDefinitionId}/start-form`);
+                cli.log(response.data);
+            } catch (e) {
+                cli.logErr(fr.toMessage(e));
+            }
+            cb();
+        });
+
+    cli.vorpal.command('process-def form-defintions <processDefinitionId>')
+        .description('List form definitions connected to the process definition.')
+        .action(async function (args, cb) {
+            try {
+                let response = await rest().get(`/repository/process-definitions/${args.processDefinitionId}/form-definitions`);
+                cli.logTable(response.data);
+            } catch (e) {
+                cli.logErr(fr.toMessage(e));
+            }
+            cb();
+        });
+
+    cli.vorpal.command('process-inst list')
+        .description('List process instances.')
         .action(async function (args, cb) {
             try {
                 let response = await rest().get('/runtime/process-instances');
@@ -32,12 +72,10 @@ module.exports = function(cli) {
             cb();
         });
 
-    // POST /runtime/process-instances
-
-    cli.vorpal.command('process-instance-create <name>')
+    cli.vorpal.command('process-inst start <name> [idValuePairs...]')
         .option('-k, --processDefinitionKey <processDefinitionKey>', 'Use process definition key')
         .option('-i, --processDefinitionId <processDefinitionId>', 'Use process definition ID')
-        .description('List process instances')
+        .description('List process instances.')
         .action(async function (args, cb) {
             let requestParameters = {};
             if (args.options.processDefinitionKey) {
@@ -49,6 +87,8 @@ module.exports = function(cli) {
                 return cb();
             }
             requestParameters.name = args.name;
+            requestParameters.variables = fr.parseIdValuePairs(args.idValuePairs, true);
+            requestParameters.returnVariables = true;
 
             try {
                 let response = await rest().post('/runtime/process-instances', requestParameters);
@@ -59,8 +99,8 @@ module.exports = function(cli) {
             cb();
         });
 
-    cli.vorpal.command('process-instance <processInstanceId>')
-        .description('Get a process instance')
+    cli.vorpal.command('process-inst get <processInstanceId>')
+        .description('Get information for a specific process instance.')
         .action(async function (args, cb) {
             try {
                 let response = await rest().get(`/runtime/process-instances/${args.processInstanceId}`);
@@ -71,9 +111,35 @@ module.exports = function(cli) {
             cb();
         });
 
+    cli.vorpal.command('process-inst variables <processInstanceId>')
+        .description('Get variables for a process instance.')
+        .action(async function (args, cb) {
+            try {
+                let response = await rest().get(`/runtime/process-instances/${args.processInstanceId}/variables`);
+                cli.logTable(response.data);
+            } catch (e) {
+                try {
+                    if (e.response.status === 404) {
+                        cli.log("No matching active instance, checking history");
+                        let historyResponse = await rest().post(`/query/historic-variable-instances`, {
+                            processInstanceId: args.processInstanceId
+                        });
+                        cli.log("Historic instance:");
+                        cli.logTable(historyResponse.data.data.map(r => { return { id: r.id, ...r.variable }; }));
+                        cli.log(fr.toPaginationMsg(historyResponse.data));
+                    } else {
+                        cli.logErr(fr.toMessage(e));
+                    }
+                } catch (e2) {
+                    cli.logErr(fr.toMessage(e2));
+                }
+            }
+            cb();
+        });
 
-    cli.vorpal.command('process-instance-delete <processInstanceId>')
-        .description('Delete a process instance')
+
+    cli.vorpal.command('process-inst delete <processInstanceId>')
+        .description('Delete a process instance.')
         .action(async function (args, cb) {
             try {
                 let response = await rest().delete(`/runtime/process-instances/${args.processInstanceId}`);
@@ -84,42 +150,17 @@ module.exports = function(cli) {
             cb();
         });
 
-    cli.vorpal.command('form-describe')
-        .option('-t, --taskId <taskId>', 'Use task ID')
-        .option('-p, --processDefinitionId <processDefinitionId>', 'Use process definition ID')
-        .description('List form')
+    cli.vorpal.command('process-inst history')
+        .description('Get a process instance history.')
         .action(async function (args, cb) {
-            let requestParameters = {};
-            if (args.options.taskId) {
-                requestParameters.taskId = args.options.taskId;
-            } else if (args.options.processDefinitionId) {
-                requestParameters.processDefinitionId = args.options.processDefinitionId;
-            } else {
-                cli.logErr("Either -t or -p must be specified.")
-                return cb();
-            }
-
             try {
-                let response = await rest().get('/form/form-data', { params: requestParameters });
-                cli.log(response.data);
+                let response = await rest().post(`/query/historic-process-instances`, { sort: "endTime", order: "desc" });
+                cli.logTable(pick.from(response.data.data, 'id', 'name', 'processDefinitionId', 'processDefinitionName',
+                    'startTime', 'endTime', 'durationInMillis', 'startUserId', 'variables'));
+                cli.log(fr.toPaginationMsg(response.data));
             } catch (e) {
                 cli.logErr(fr.toMessage(e));
             }
             cb();
         });
-
-
 };
-
-
-/*
-    Variable representation
-    {
-        "name" : "variableName",
-        "value" : "variableValue",
-        "valueUrl" : "http://...",
-        "type" : "string"
-    }
-
-
- */
