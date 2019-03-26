@@ -77,8 +77,6 @@ module.exports = function(cli) {
                         variables.push({name: "employer_id", value: args.userId});
                         variables.push({name: "worker_group", value: args.workerGroup});
 
-                        console.log(JSON.stringify(variables));
-
                         let response = await rest().post('/runtime/process-instances', {
                             processDefinitionKey: args.processKey,
                             variables: variables,
@@ -104,12 +102,11 @@ module.exports = function(cli) {
         .action(async function (args, cb) {
             try {
                 if (args.taskId) {
+                    // Try to claim the work.
                     cli.log(`Claiming work ${args.taskId} for user ${args.userId}`);
 
                     let variables = fr.parseIdValuePairs(args.keyValuePairs, true);
                     variables.push({name: "worker_id", value: args.userId});
-
-                    console.log(JSON.stringify(variables))
 
                     // Complete and assign the task in one go. If another worker claimed
                     // the task this will throw an exception.
@@ -118,9 +115,9 @@ module.exports = function(cli) {
                         assignee: args.userId,
                         variables: variables
                     });
-
                     cli.log(response.status)
                 } else {
+                    // List available work which the user can claim.
                     let userGroups = (await getEnrolledGroups(args.userId, workGroupType));
                     if (userGroups.length > 0) {
                         let response = await rest().post(`/query/tasks`, {
@@ -128,6 +125,7 @@ module.exports = function(cli) {
                             unassigned: true,
                             candidateGroupIn: userGroups
                         });
+                        cli.log(`Listing work that can be claimed by user ${args.taskId}`);
                         cli.logTable(pick.from(response.data.data,'id', 'owner', 'assignee', 'name',
                             'createTime', 'claimTime', 'formKey', 'taskDefinitionKey', 'processDefinitionId', 'variables'));
                         cli.log(fr.toPaginationMsg(response.data));

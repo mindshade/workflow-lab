@@ -51,6 +51,29 @@ Make sure you have docker container started according to the "Setup" instruction
 5. The command `process-definitions` should bow list your process definition.
 6. Start a new process instance using `process-instance-create -i <processDefinitionId> <name>`.
 7. View process instances using `process-instances`.
-7. If your process stops at a manual task this is listed by `tasks`.
+9. If your process stops at a manual task this is listed by `tasks`.
 8. Assign the task to a user with `task-assign <id> <user>`
-8. Complete a task, to make the process instance move on, `task-complete <id>`.
+9. Complete a task, to make the process instance move on, `task-complete <id>`.
+
+# Basic workflow recipe commands
+
+The command group `wf` includes a set of commands to make simulation of workflows using a specific pattern easier. 
+
+The basic pattern is defined as follows:
+
+1. A process definition is deployed and one or more worker groups are created for users to enroll with if they want to perform tasks defined by the process definition.
+2. Worker users can enroll and de-enroll with these user groups.
+3. Workers can claim work assigned to these groups, only one user can claim each work item.
+4. After claiming the work item the worker is tasked with one or more tasks that needs to be completed.
+5. The employer can also be assigned tasks, for example the task of paying the worker when the job is done.
+
+The following rules/conventions used are for the recipes:
+
+1. User groups always have the group type = `worker-group`
+2. When starting a process instance:
+    - The process variable `employer_id` is always set to the user id of the employer.
+    - The process variable `worker_group`is always set to the group if of the worker enrollment group.  
+3. When work is claimed by a worker the process variable `worker_id` is always defined as the user id of the worker. The variable is used to assign later task items.
+4. When a task is assigned to a user the task category defines which skill is required to perform the task.
+
+
