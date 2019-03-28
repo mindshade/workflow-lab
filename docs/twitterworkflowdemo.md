@@ -68,7 +68,7 @@ Start three jobs:
 
     wf start employer1 twitterjob tweeters "tweet_msg=First tweet"
     wf start employer1 twitterjob tweeters "tweet_msg=Second tweet"
-    wf start employer1 twitterjob tweeters "tweet_msg=Thirs tweet"
+    wf start employer1 twitterjob tweeters "tweet_msg=Third tweet"
         
 List all process instances in flowable:  
   
