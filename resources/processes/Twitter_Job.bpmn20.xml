@@ -29,7 +29,7 @@ if (execution.getVariable("worker_payaddress") == null) {
   throw new Error("worker_payaddress must be specified");
 }]]></script>
     </scriptTask>
-    <userTask id="sid-E963A5ED-E2BB-483B-99C1-91E4A543DAA8" name="DoWork" flowable:assignee="${worker_id}" flowable:category="tweet_skill">
+    <userTask id="sid-E963A5ED-E2BB-483B-99C1-91E4A543DAA8" name="Tweet" flowable:assignee="${worker_id}" flowable:category="tweet_skill">
       <extensionElements>
         <flowable:formProperty id="work_result" name="Work Result" type="string" variable="work_result" required="true"></flowable:formProperty>
         <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
@@ -44,7 +44,7 @@ if (execution.getVariable("worker_payaddress") == null) {
     </scriptTask>
     <endEvent id="sid-13AF1E16-64D9-4512-B4F5-12D05D287CAA"></endEvent>
     <sequenceFlow id="sid-28CBF798-49BD-47FE-A9AC-97F2E8A68A41" sourceRef="startEvent1" targetRef="sid-ED74D26C-6790-4AAF-80BC-EB96C74115EB"></sequenceFlow>
-    <userTask id="sid-5A910AD9-FF33-453B-9E7C-650564992B17" name="Payment" flowable:assignee="${employer_id}" flowable:category="payment_skill">
+    <userTask id="sid-5A910AD9-FF33-453B-9E7C-650564992B17" name="Pay Worker" flowable:assignee="${employer_id}" flowable:category="payment_skill">
       <extensionElements>
         <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
       </extensionElements>
@@ -80,8 +80,8 @@ if (execution.getVariable("worker_payaddress") == null) {
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="sid-F52A0F45-D2ED-4609-AD99-E3BA741E930C" id="BPMNEdge_sid-F52A0F45-D2ED-4609-AD99-E3BA741E930C">
         <omgdi:waypoint x="805.0" y="217.95000000000002"></omgdi:waypoint>
-        <omgdi:waypoint x="805.0" y="266.5"></omgdi:waypoint>
-        <omgdi:waypoint x="225.0" y="266.5"></omgdi:waypoint>
+        <omgdi:waypoint x="805.0" y="266.0"></omgdi:waypoint>
+        <omgdi:waypoint x="225.0" y="266.0"></omgdi:waypoint>
         <omgdi:waypoint x="225.0" y="315.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-28CBF798-49BD-47FE-A9AC-97F2E8A68A41" id="BPMNEdge_sid-28CBF798-49BD-47FE-A9AC-97F2E8A68A41">

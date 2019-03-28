@@ -37,7 +37,7 @@ Create an "App" deployment containing the workflow process.
 
 Employer:
 
-    user create tweet_employer 
+    user create employer1 
 
 Workers:
 
@@ -62,11 +62,11 @@ Check for available work
 
 Check which jobs the `tweet_employer` can start:
 
-    wf start tweet_employer
+    wf start employer1
     
 Start three jobs:
 
-    wf start tweet_employer twitterjob tweeters "tweet_msg=First tweet"
+    wf start employer1 twitterjob tweeters "tweet_msg=First tweet"
         
 List all process instances in flowable:  
   
