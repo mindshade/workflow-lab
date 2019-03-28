@@ -76,4 +76,8 @@ The following rules/conventions used are for the recipes:
 3. When work is claimed by a worker the process variable `worker_id` is always defined as the user id of the worker. The variable is used to assign later task items.
 4. When a task is assigned to a user the task category defines which skill is required to perform the task.
 
+# Demos
+
+- [Twitter Workflow Demo](docs/twitterworkflowdemo.md)
+
 

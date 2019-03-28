@@ -1,3 +1,4 @@
+const pick = require('../util/pick');
 const fr = require('../util/flowable-rest');
 const rest = fr.client;
 
@@ -18,7 +19,7 @@ module.exports = function(cli) {
         .action(async function (args, cb) {
             try {
                 let response = await rest().get('/identity/users');
-                cli.logTable(response.data.data);
+                cli.logTable(pick.from(response.data.data, 'id', 'firstName', 'lastName', 'email'));
                 cli.log(fr.toPaginationMsg(response.data));
             } catch (e) {
                 cli.logErr(fr.toMessage(e));
@@ -66,7 +67,7 @@ module.exports = function(cli) {
         .action(async function (args, cb) {
             try {
                 let response = await rest().get('/identity/groups');
-                cli.logTable(response.data.data);
+                cli.logTable(pick.from(response.data.data, 'id', 'name', 'type'));
                 cli.log(fr.toPaginationMsg(response.data));
             } catch (e) {
                 cli.logErr(fr.toMessage(e));

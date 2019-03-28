@@ -7,7 +7,7 @@ module.exports = function(cli) {
     const workGroupType = 'worker-group';
 
     cli.vorpal.command('wf group <groupId> [groupName]')
-        .description('Create a worker group.')
+        .description('Create a worker group. [Workflow Setup]')
         .action(async function (args, cb) {
             try {
                 let response = await rest().post('/identity/groups', {
@@ -23,8 +23,8 @@ module.exports = function(cli) {
         });
 
     cli.vorpal.command('wf enroll <userId> [groupId]')
-        .description('Enroll or de-enroll for work by joining a group.')
-        .option('-d, --deenroll', 'De-enroll from previously enrolled worker group.')
+        .description('Enroll or de-enroll for work by joining or leaving a group. [Worker]')
+        .option('-d, --deenroll', 'De-enroll (leave) from previously enrolled worker group.')
         .action(async function (args, cb) {
             try {
                 if (args.groupId) {
@@ -44,7 +44,7 @@ module.exports = function(cli) {
                     let memberResponse = await rest().get('/identity/groups', { params: { member: args.userId, type: workGroupType }});
                     const memberOf = memberResponse.data.data;
                     if (memberOf.length > 0) {
-                        cli.logTable(memberOf);
+                        cli.logTable(pick.from(memberOf, 'id', 'name', 'type'));
                     } else {
                         cli.log("\tNo groups enrolled");
                     }
@@ -53,7 +53,7 @@ module.exports = function(cli) {
                     let response = await rest().get('/identity/groups',  { params: { type: workGroupType }});
                     const enrolledFor = response.data.data.filter(g => !memberOf.some(m => m.id === g.id));
                     if (enrolledFor.length > 0) {
-                        cli.logTable(enrolledFor);
+                        cli.logTable(pick.from(enrolledFor, 'id', 'name', 'type'));
                     } else {
                         cli.log("\tNo additional groups available to enroll for");
                     }
@@ -65,7 +65,7 @@ module.exports = function(cli) {
         });
 
     cli.vorpal.command('wf start <userId> [processKey] [workerGroup] [keyValuePairs...]')
-        .description('List / start workflow processes that can be started by given user (employer).')
+        .description('List / start workflow processes that can be started by the given user. [Employer]')
         .action(async function (args, cb) {
             try {
                 if (args.processKey) {
@@ -98,7 +98,7 @@ module.exports = function(cli) {
 
 
     cli.vorpal.command('wf work <userId> [taskId] [keyValuePairs...]')
-        .description('List / claim available work that can be claimed based on enrolled groups (worker).')
+        .description('List / claim available work that can be claimed based on enrolled groups. [Worker]')
         .action(async function (args, cb) {
             try {
                 if (args.taskId) {
@@ -140,7 +140,7 @@ module.exports = function(cli) {
         });
 
     cli.vorpal.command('wf task <userId> [taskId] [keyValuePairs...]')
-        .description('List / submit work tasks for a given user (worker or employer).')
+        .description('List / submit work tasks for a given user. [Worker or Employer]')
         .action(async function (args, cb) {
             try {
                 if (args.taskId) {
