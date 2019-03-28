@@ -4,6 +4,12 @@
 
 An employer creates a workflow for twitter jobs. Each job defines a message to tweet on behalf of the employer. Workers perform these jobs and gets paid for doing so.
 
+# Video
+
+Here is a video where I walk through the steps below.
+
+[![Video running through the use case](https://i9.ytimg.com/vi/ZwAV8BEalzU/mq3.jpg?sqp=CIii8-QF&rs=AOn4CLAaIGTNgxcW3J91VJWX-6enm1qzIw)](https://youtu.be/ZwAV8BEalzU)
+
 # Steps
 
 ## 1. Installing
