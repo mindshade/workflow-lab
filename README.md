@@ -32,6 +32,15 @@ Now the REST API, as well as the other UI apps should be available at:
 - Flowable Task <http://localhost:8080/flowable-task>
 - Flowable Admin <http://localhost:8080/flowable-admin>
 
+### Enable the process debugger
+
+Flowable has a process debugger which can be used to, set breakpoints, evaluate scripts and inspect the execution environment, it is mentioned here <https://blog.flowable.org/2018/05/30/process-debugger/> 
+
+To enable the debugger start the container with an additional `--env JAVA_OPTS="..."` like this:
+
+    docker run --env JAVA_OPTS="-Xms1024M -Xmx1024M -Djava.security.egd=file:/dev/./urandom -Dflowable.experimental.debugger.enabled=true" -p8080:8080 --name flowable-lab-debugger flowable-all-with-rest
+
+
 ## Lab CLI
 
 Start the lab CLI with `yarn run dev` in the root directory (for automatic reload on code changes). 
