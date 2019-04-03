@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="twitterjobmulti" name="Twitter Job Multi" isExecutable="true" flowable:candidateStarterUsers="employer1">
+    <documentation>Twitter Job with multiple tweets</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <scriptTask id="sid-ED74D26C-6790-4AAF-80BC-EB96C74115EB" name="SetupVars" scriptFormat="javascript" flowable:autoStoreVariables="true">
+      <script><![CDATA[if (execution.getVariable("worker_group") == null) {
+  throw new Error("worker_group must be specified");
+}
+if (execution.getVariable("employer_id") == null) {
+  throw new Error("employer_id must be specified");
+}
+if (execution.getVariable("tweet_msg") == null) {
+  throw new Error("tweet_msg must be specified");
+}
+if (execution.getVariable("tweet_count") == null) {
+  throw new Error("tweet_count must be specified");
+}]]></script>
+    </scriptTask>
+    <sequenceFlow id="sid-28CBF798-49BD-47FE-A9AC-97F2E8A68A41" sourceRef="startEvent1" targetRef="sid-ED74D26C-6790-4AAF-80BC-EB96C74115EB"></sequenceFlow>
+    <subProcess id="sid-79222D87-4FFD-45DB-8DE3-8272C563FE5D" name="subProcess">
+      <multiInstanceLoopCharacteristics isSequential="false">
+        <loopCardinality>${tweet_count}</loopCardinality>
+      </multiInstanceLoopCharacteristics>
+      <userTask id="sid-4310BF3F-D087-426C-9E42-2B26CCFB8CE7" name="ClaimWork" flowable:candidateGroups="${worker_group}">
+        <extensionElements>
+          <flowable:formProperty id="claimed_by" name="Claimed by" type="string" variable="claimed_by" required="true"></flowable:formProperty>
+        </extensionElements>
+      </userTask>
+      <scriptTask id="sid-B14AE1DD-9E34-40B1-9B08-D47CDABC15A3" name="CheckClaim" scriptFormat="javascript" flowable:autoStoreVariables="true">
+        <script><![CDATA[if (execution.getVariable("worker_id") == null) {
+  throw new Error("worker_id must be specified");
+}
+if (execution.getVariable("worker_payaddress") == null) {
+  throw new Error("worker_payaddress must be specified");
+}]]></script>
+      </scriptTask>
+      <userTask id="sid-E963A5ED-E2BB-483B-99C1-91E4A543DAA8" name="Tweet" flowable:assignee="${worker_id}" flowable:category="tweet_skill">
+        <extensionElements>
+          <flowable:formProperty id="work_result" name="Work Result" type="string" variable="work_result" required="true"></flowable:formProperty>
+          <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+        </extensionElements>
+      </userTask>
+      <scriptTask id="sid-53D8AEB2-1DF7-4B11-8665-B19DCA9B7D0F" name="CheckWork" scriptFormat="javascript" flowable:autoStoreVariables="true">
+        <script><![CDATA[if (execution.getVariable("work_result") == null) {
+  throw new Error("work_result must be specified");
+}]]></script>
+      </scriptTask>
+      <userTask id="sid-5A910AD9-FF33-453B-9E7C-650564992B17" name="Pay Worker" flowable:assignee="${employer_id}" flowable:category="payment_skill">
+        <extensionElements>
+          <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+        </extensionElements>
+      </userTask>
+      <endEvent id="sid-13AF1E16-64D9-4512-B4F5-12D05D287CAA"></endEvent>
+      <startEvent id="sid-0017D683-222D-4436-B378-B59E9EE61FFD"></startEvent>
+      <sequenceFlow id="sid-3FF8F2B4-F1D2-4F35-B7A6-0E82F5DCB1C9" sourceRef="sid-4310BF3F-D087-426C-9E42-2B26CCFB8CE7" targetRef="sid-B14AE1DD-9E34-40B1-9B08-D47CDABC15A3"></sequenceFlow>
+      <sequenceFlow id="sid-AA55F602-0077-48D1-8F00-078BB18D3256" sourceRef="sid-B14AE1DD-9E34-40B1-9B08-D47CDABC15A3" targetRef="sid-E963A5ED-E2BB-483B-99C1-91E4A543DAA8"></sequenceFlow>
+      <sequenceFlow id="sid-528CE9C2-0EFD-4E65-9DBE-6B381EBE6BA4" sourceRef="sid-E963A5ED-E2BB-483B-99C1-91E4A543DAA8" targetRef="sid-53D8AEB2-1DF7-4B11-8665-B19DCA9B7D0F"></sequenceFlow>
+      <sequenceFlow id="sid-7D64DBE9-671C-48A4-A48E-912298560D39" sourceRef="sid-5A910AD9-FF33-453B-9E7C-650564992B17" targetRef="sid-13AF1E16-64D9-4512-B4F5-12D05D287CAA"></sequenceFlow>
+      <sequenceFlow id="sid-F52A0F45-D2ED-4609-AD99-E3BA741E930C" sourceRef="sid-53D8AEB2-1DF7-4B11-8665-B19DCA9B7D0F" targetRef="sid-5A910AD9-FF33-453B-9E7C-650564992B17"></sequenceFlow>
+      <sequenceFlow id="sid-C4CB3FD2-ABFD-4E90-9BDB-8072C69806D1" sourceRef="sid-0017D683-222D-4436-B378-B59E9EE61FFD" targetRef="sid-4310BF3F-D087-426C-9E42-2B26CCFB8CE7"></sequenceFlow>
+    </subProcess>
+    <sequenceFlow id="sid-BE36481B-D459-4964-AC54-9E36EE32BBD0" sourceRef="sid-ED74D26C-6790-4AAF-80BC-EB96C74115EB" targetRef="sid-79222D87-4FFD-45DB-8DE3-8272C563FE5D"></sequenceFlow>
+    <endEvent id="sid-DA300658-E2D1-4FC3-8C73-D22CE34EEF2D"></endEvent>
+    <sequenceFlow id="sid-B690E50E-F3C1-4EC1-9F8A-1D60FCFC8444" sourceRef="sid-79222D87-4FFD-45DB-8DE3-8272C563FE5D" targetRef="sid-DA300658-E2D1-4FC3-8C73-D22CE34EEF2D"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_twitterjobmulti">
+    <bpmndi:BPMNPlane bpmnElement="twitterjobmulti" id="BPMNPlane_twitterjobmulti">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="29.999999999999996" x="30.000000000000004" y="280.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-ED74D26C-6790-4AAF-80BC-EB96C74115EB" id="BPMNShape_sid-ED74D26C-6790-4AAF-80BC-EB96C74115EB">
+        <omgdc:Bounds height="79.99999999999997" width="99.99999999999999" x="105.00000000000001" y="255.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-79222D87-4FFD-45DB-8DE3-8272C563FE5D" id="BPMNShape_sid-79222D87-4FFD-45DB-8DE3-8272C563FE5D">
+        <omgdc:Bounds height="259.0" width="655.0000000000002" x="255.00000000000003" y="165.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-4310BF3F-D087-426C-9E42-2B26CCFB8CE7" id="BPMNShape_sid-4310BF3F-D087-426C-9E42-2B26CCFB8CE7">
+        <omgdc:Bounds height="79.99999999999994" width="100.0" x="335.5000000000001" y="191.0000026490953"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B14AE1DD-9E34-40B1-9B08-D47CDABC15A3" id="BPMNShape_sid-B14AE1DD-9E34-40B1-9B08-D47CDABC15A3">
+        <omgdc:Bounds height="79.99999999999994" width="100.00000000000003" x="480.5000000000001" y="191.0000026490953"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E963A5ED-E2BB-483B-99C1-91E4A543DAA8" id="BPMNShape_sid-E963A5ED-E2BB-483B-99C1-91E4A543DAA8">
+        <omgdc:Bounds height="79.99999999999994" width="100.00000000000003" x="625.5000000000001" y="191.0000026490953"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-53D8AEB2-1DF7-4B11-8665-B19DCA9B7D0F" id="BPMNShape_sid-53D8AEB2-1DF7-4B11-8665-B19DCA9B7D0F">
+        <omgdc:Bounds height="79.99999999999994" width="100.00000000000003" x="770.5000000000001" y="191.0000026490953"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5A910AD9-FF33-453B-9E7C-650564992B17" id="BPMNShape_sid-5A910AD9-FF33-453B-9E7C-650564992B17">
+        <omgdc:Bounds height="80.00000000000003" width="100.0" x="335.5000000000001" y="326.00000264909534"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-13AF1E16-64D9-4512-B4F5-12D05D287CAA" id="BPMNShape_sid-13AF1E16-64D9-4512-B4F5-12D05D287CAA">
+        <omgdc:Bounds height="27.99999999999997" width="27.99999999999997" x="465.0000000000001" y="352.00000264909545"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0017D683-222D-4436-B378-B59E9EE61FFD" id="BPMNShape_sid-0017D683-222D-4436-B378-B59E9EE61FFD">
+        <omgdc:Bounds height="30.0" width="30.0" x="270.00000000000006" y="216.0000026490953"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DA300658-E2D1-4FC3-8C73-D22CE34EEF2D" id="BPMNShape_sid-DA300658-E2D1-4FC3-8C73-D22CE34EEF2D">
+        <omgdc:Bounds height="28.0" width="28.0" x="991.9999921851687" y="280.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-F52A0F45-D2ED-4609-AD99-E3BA741E930C" id="BPMNEdge_sid-F52A0F45-D2ED-4609-AD99-E3BA741E930C">
+        <omgdi:waypoint x="820.5000000000001" y="270.95000264909527"></omgdi:waypoint>
+        <omgdi:waypoint x="820.5000000000001" y="296.0000026490952"></omgdi:waypoint>
+        <omgdi:waypoint x="385.5000000000001" y="296.0000026490952"></omgdi:waypoint>
+        <omgdi:waypoint x="385.5000000000001" y="326.00000264909534"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-28CBF798-49BD-47FE-A9AC-97F2E8A68A41" id="BPMNEdge_sid-28CBF798-49BD-47FE-A9AC-97F2E8A68A41">
+        <omgdi:waypoint x="59.9499984899576" y="295.00000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="105.00000000000001" y="295.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B690E50E-F3C1-4EC1-9F8A-1D60FCFC8444" id="BPMNEdge_sid-B690E50E-F3C1-4EC1-9F8A-1D60FCFC8444">
+        <omgdi:waypoint x="909.9500000000003" y="294.5"></omgdi:waypoint>
+        <omgdi:waypoint x="991.9999921851687" y="294.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C4CB3FD2-ABFD-4E90-9BDB-8072C69806D1" id="BPMNEdge_sid-C4CB3FD2-ABFD-4E90-9BDB-8072C69806D1">
+        <omgdi:waypoint x="299.9499981911427" y="231.0000026490953"></omgdi:waypoint>
+        <omgdi:waypoint x="335.4999999999927" y="231.00000264909528"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3FF8F2B4-F1D2-4F35-B7A6-0E82F5DCB1C9" id="BPMNEdge_sid-3FF8F2B4-F1D2-4F35-B7A6-0E82F5DCB1C9">
+        <omgdi:waypoint x="435.45000000000016" y="231.00000264909528"></omgdi:waypoint>
+        <omgdi:waypoint x="480.5000000000001" y="231.00000264909528"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-528CE9C2-0EFD-4E65-9DBE-6B381EBE6BA4" id="BPMNEdge_sid-528CE9C2-0EFD-4E65-9DBE-6B381EBE6BA4">
+        <omgdi:waypoint x="725.45" y="231.00000264909528"></omgdi:waypoint>
+        <omgdi:waypoint x="770.5000000000001" y="231.00000264909528"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AA55F602-0077-48D1-8F00-078BB18D3256" id="BPMNEdge_sid-AA55F602-0077-48D1-8F00-078BB18D3256">
+        <omgdi:waypoint x="580.4500000000002" y="231.00000264909528"></omgdi:waypoint>
+        <omgdi:waypoint x="625.5000000000001" y="231.00000264909528"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7D64DBE9-671C-48A4-A48E-912298560D39" id="BPMNEdge_sid-7D64DBE9-671C-48A4-A48E-912298560D39">
+        <omgdi:waypoint x="385.5000000000001" y="366.00000264909534"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0000000000001" y="366.00000264909545"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BE36481B-D459-4964-AC54-9E36EE32BBD0" id="BPMNEdge_sid-BE36481B-D459-4964-AC54-9E36EE32BBD0">
+        <omgdi:waypoint x="204.94999999999985" y="294.7523307949612"></omgdi:waypoint>
+        <omgdi:waypoint x="255.00000000000003" y="294.5044139207174"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
