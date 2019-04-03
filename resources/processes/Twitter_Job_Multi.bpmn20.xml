@@ -33,6 +33,15 @@ if (execution.getVariable("tweet_count") == null) {
 }
 if (execution.getVariable("worker_payaddress") == null) {
   throw new Error("worker_payaddress must be specified");
+}
+
+// Check that same worker doesn't participate twice for this job by setting a variable in the parent scope
+var workerId = execution.getVariable("worker_id");
+var workerDoneVarName = "done_"+workerId;
+if (execution.getVariable(workerDoneVarName)) {
+     throw new Error("Worker can only participate once for this job");
+} else {
+    runtimeService.setVariable(execution.parent.id, workerDoneVarName, true);
 }]]></script>
       </scriptTask>
       <userTask id="sid-E963A5ED-E2BB-483B-99C1-91E4A543DAA8" name="Tweet" flowable:assignee="${worker_id}" flowable:category="tweet_skill">
@@ -91,7 +100,7 @@ if (execution.getVariable("worker_payaddress") == null) {
         <omgdc:Bounds height="80.00000000000003" width="100.0" x="335.5000000000001" y="326.00000264909534"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-13AF1E16-64D9-4512-B4F5-12D05D287CAA" id="BPMNShape_sid-13AF1E16-64D9-4512-B4F5-12D05D287CAA">
-        <omgdc:Bounds height="27.99999999999997" width="27.99999999999997" x="465.0000000000001" y="352.00000264909545"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="465.0000000000001" y="352.00000264909545"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-0017D683-222D-4436-B378-B59E9EE61FFD" id="BPMNShape_sid-0017D683-222D-4436-B378-B59E9EE61FFD">
         <omgdc:Bounds height="30.0" width="30.0" x="270.00000000000006" y="216.0000026490953"></omgdc:Bounds>
@@ -100,10 +109,10 @@ if (execution.getVariable("worker_payaddress") == null) {
         <omgdc:Bounds height="28.0" width="28.0" x="991.9999921851687" y="280.5"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="sid-F52A0F45-D2ED-4609-AD99-E3BA741E930C" id="BPMNEdge_sid-F52A0F45-D2ED-4609-AD99-E3BA741E930C">
-        <omgdi:waypoint x="820.5000000000001" y="270.95000264909527"></omgdi:waypoint>
-        <omgdi:waypoint x="820.5000000000001" y="296.0000026490952"></omgdi:waypoint>
-        <omgdi:waypoint x="385.5000000000001" y="296.0000026490952"></omgdi:waypoint>
-        <omgdi:waypoint x="385.5000000000001" y="326.00000264909534"></omgdi:waypoint>
+        <omgdi:waypoint x="820.1923076797676" y="270.95000264909527"></omgdi:waypoint>
+        <omgdi:waypoint x="820.0" y="296.0"></omgdi:waypoint>
+        <omgdi:waypoint x="385.0" y="296.0"></omgdi:waypoint>
+        <omgdi:waypoint x="385.2142857250984" y="326.00000264909534"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-28CBF798-49BD-47FE-A9AC-97F2E8A68A41" id="BPMNEdge_sid-28CBF798-49BD-47FE-A9AC-97F2E8A68A41">
         <omgdi:waypoint x="59.9499984899576" y="295.00000000000006"></omgdi:waypoint>
@@ -134,8 +143,8 @@ if (execution.getVariable("worker_payaddress") == null) {
         <omgdi:waypoint x="465.0000000000001" y="366.00000264909545"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-BE36481B-D459-4964-AC54-9E36EE32BBD0" id="BPMNEdge_sid-BE36481B-D459-4964-AC54-9E36EE32BBD0">
-        <omgdi:waypoint x="204.94999999999985" y="294.7523307949612"></omgdi:waypoint>
-        <omgdi:waypoint x="255.00000000000003" y="294.5044139207174"></omgdi:waypoint>
+        <omgdi:waypoint x="204.9499999999827" y="294.9415204678362"></omgdi:waypoint>
+        <omgdi:waypoint x="254.99999999994805" y="294.8829824561403"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
